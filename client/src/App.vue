@@ -37,7 +37,8 @@ export default {
         this.bookings.splice(index, 1);
       });
     });
-  },
+  }
+  ,
   methods: {
     fetchBookings() {
       BookingService.getBookings()
