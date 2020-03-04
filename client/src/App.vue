@@ -1,20 +1,21 @@
 <template>
   <div id="app">
-    <!-- <bookings-form /> -->
+    <bookings-form />
     <bookings-grid :bookings="bookings"/>
   </div>
 </template>
 
 <script>
 import {eventBus} from './main.js';
-// import BookingsForm from './components/BookingsForm';
+import BookingsForm from './components/BookingsForm';
 import BookingsGrid from './components/BookingsGrid';
 import BookingService from './services/BookingService';
 
 export default {
   name: 'App',
   components: {
-    'bookings-grid': BookingsGrid
+    'bookings-grid': BookingsGrid,
+    'bookings-form': BookingsForm
   },
   data(){
     return {
@@ -23,6 +24,19 @@ export default {
   },
   mounted() {
     this.fetchBookings();
+
+    eventBus.$on('submit-booking', payload => {
+      BookingService.postBooking(payload)
+      .then(booking => this.bookings.push(booking));
+    });
+
+    eventBus.$on('delete-booking', id => {
+      BookingService.deleteBooking(id)
+      .then(() => {
+        const index = this.bookings.findIndex(booking => booking._id === id);
+        this.bookings.splice(index, 1);
+      });
+    });
   },
   methods: {
     fetchBookings() {
